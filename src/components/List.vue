@@ -52,11 +52,15 @@
         },
         methods: {
             addTodo: function() {
+                // create new todo 
+                const star = {
+                    descr: this.todoInput,
+                    done: false,
+                    bucket: this.currentBucket
+                }
                 // push todo to shown List
-                    this.filteredList.push({
-                        descr: this.todoInput,
-                        done: false,
-                    })
+                    this.filteredList.push(star)
+                    this.list.push(star)
                     this.todoInput = ''
                 },
                 // filter the List for the right Bucket
