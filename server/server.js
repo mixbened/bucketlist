@@ -11,11 +11,19 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-// Endpoints
+// ENDPOINTS
+// Bucket Crud
 app.post('/bucket', datastore.addBucket);
-app.get('/buckets', datastore.getBuckets);
-app.delete('/bucket/:id', datastore.deleteBucket);
-app.put('/bucket', datastore.editBucket);
+// app.get('/buckets', datastore.getBuckets);
+// app.delete('/bucket/:id', datastore.deleteBucket);
+// app.put('/bucket', datastore.changeBucket);
+// Todo Crud
+// app.post('/todo', datastore.addTodo);
+// app.get('/todos', datastore.getTodos);
+// app.delete('/todo/:id', datastore.deleteTodo);
+// app.put('/todo', datastore.editTodo);
+// User Crud
+app.post('/user', datastore.registerUser);
 
 
 // start the server 
