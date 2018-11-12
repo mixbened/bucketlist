@@ -16,31 +16,7 @@
         name: 'List',
         data() { 
             return {
-                list: [{
-                    descr: 'Go out with the Dog0',
-                    done: false,
-                    bucket: 'home'
-                },
-                {
-                    descr: 'Cologne',
-                    done: false,
-                    bucket: 'cities'
-                },
-                {
-                    descr: 'Buy Milk',
-                    done: true,
-                    bucket: 'home'
-                },
-                {
-                    descr: 'Learn Vue!',
-                    done: false,
-                    bucket: 'work'
-                },
-                {
-                    descr: 'London',
-                    done: false,
-                    bucket: 'cities'
-                }],
+                list: [],
                 todoInput: '',
                 filteredList: []
                 }

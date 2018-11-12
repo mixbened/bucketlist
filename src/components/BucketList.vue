@@ -15,14 +15,7 @@ export default {
     name: 'BucketList',
     data () {
         return {
-            bucketList: [{
-                id: 1224,
-                title: 'cities'
-            },
-            {
-                id: 334,
-                title: 'home'
-            }],
+            bucketList: [],
             titleInput: ''
         }
     },

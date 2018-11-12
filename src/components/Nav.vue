@@ -1,5 +1,8 @@
 <template>
-    <h1>Navigation</h1>
+    <div>
+        <h1>Navigation</h1>
+        <v-btn color="warning">Info</v-btn>
+    </div>
 </template>
 
 <script>
