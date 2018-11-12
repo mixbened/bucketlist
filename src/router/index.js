@@ -4,6 +4,7 @@ import Dashboard from '@/components/Dashboard'
 import Home from '../components/Home'
 import Login from '../components/Login.vue'
 
+
 Vue.use(Router)
 
 export default new Router({

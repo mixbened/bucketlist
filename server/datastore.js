@@ -1,178 +1,8 @@
 const Datastore = require('@google-cloud/datastore');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 const datastore = new Datastore({});
-
-// module.exports = {
-//     // CRUD for BUCKETS
-//     addBucket: (req, res) => {
-//         const title = req.body.title;
-//         const userId = req.body.userId;
-//         const bucketKey = datastore.key('Bucket');
-
-//         const entity = {
-//             key: bucketKey,
-//             data: [
-//                 {
-//                     name: 'created',
-//                     value: new Date().toJSON()
-//                 },
-//                 {
-//                     name: 'title',
-//                     value: title
-//                 },
-//                 {
-//                     name: 'user',
-//                     value: userId
-//                 }
-//             ]
-//         }
-
-//         datastore.save(entity).then(() => {
-//             console.log(`Bucket saved with ID ${bucketKey.id} created`);
-//             res.send('Successfull creation');
-//         }).catch(err => {
-//             console.log('Error: ', err);
-//             res.send('Failed')
-//         });
-//     },
-//     getBuckets: (req,res) => {
-//         const query = datastore.createQuery('Bucket').order('created');
-
-//         datastore.runQuery(query).then(results => {
-//             const buckets = results[0];
-//             const formatBuckets = [];
-//             buckets.forEach(bucket => {
-//                 const bucketObj = {
-//                     id: bucket[datastore.KEY].id,
-//                     title: bucket.title
-//                 }
-//                 formatBuckets.push(bucketObj);
-//             })
-//             console.log('buckets', formatBuckets)
-//             res.status(200).json(formatBuckets);
-//         });
-//     },
-//     deleteBucket: (req, res) => {
-//         const bucketId = parseInt(req.params.id,10);
-//         const bucketKey = datastore.key(['Bucket', bucketId]);
-//         console.log(bucketId)
-//         datastore.delete(bucketKey).then(() => {
-//             console.log(`Task successfully deleted ${bucketId}`);
-//             res.status(200).send('Delete Success')
-//         }).catch(err => {
-//             console.log('Error in deleting: ', bucketId);
-//         });
-//     },
-//     changeBucket: (req, res) => {
-//         const title = req.body.title;
-//         const transaction = datastore.transaction();
-//         const taskKey = datastore.key(['Bucket', parseInt(req.body.id, 10)]);
-        
-//         // invalid Transactin - FIX!
-//         transaction
-//             .run()
-//             .then(() => transaction.get(taskKey))
-//             .then(results => {
-//                 const todo = results[0];
-//                 todo.title = title;
-//                 transaction.save({
-//                     key: taskKey,
-//                     data: todo
-//                 });
-//                 return transaction.commit();
-//             })
-//             .then(() => {
-//                 console.log('Task ' + req.body.id + ' changed successfully');
-//                 res.status(200).send('Title changed!')
-//             })
-//             .catch(err => console.log('Error to the Console: ', err));
-//     },
-//     // CRUD for Tasks
-//     addTodo: (req, res) => {
-//         const userId = req.body.userId;
-//         const bucket = req.body.bucket;
-//         const descr = req.body.descr;
-//         const todoKey = datastore.key('Todo');
-
-//         const entity = {
-//             key: todoKey,
-//             data: [
-//                 {
-//                     name: 'created',
-//                     value: new Date().toJSON()
-//                 },
-//                 {
-//                     name: 'description',
-//                     value: descr
-//                 },
-//                 {
-//                     name: 'bucket',
-//                     value: bucket
-//                 },
-//                 {
-//                     name: 'user',
-//                     value: userId
-//                 },
-//                 {
-//                     name: 'check',
-//                     value: false
-//                 }
-//             ]
-//         }
-
-//         datastore.save(entity).then(() => {
-//             console.log(`Todo saved with ID ${todoKey.id} created`);
-//             res.send('Successfull creation');
-//         }).catch(err => {
-//             console.log('Error: ', err);
-//             res.send('Failed')
-//         });
-//     },
-//     getTodos: (req,res) => {
-//         const userId = req.params.id;
-//         const query = datastore.createQuery('Todo').filter('user', '=', userId).order('created');
-//         datastore.runQuery(query).then(results => {
-//             const todos = results[0];            
-//             console.log('Todos: ', todos);
-//             res.status(200).json(todos);
-//         });
-//     },
-//     deleteTodo: (req, res) => {
-//         const todoId = parseInt(req.params.id,10);
-//         const todoKey = datastore.key(['Todo', todoId]);
-//         datastore.delete(todoKey).then(() => {
-//             console.log(`Todo successfully deleted ${bucketId}`);
-//             res.status(200).send('Delete Success')
-//         }).catch(err => {
-//             console.log('Error in deleting: ', todoId);
-//         });
-//     },
-//     editTodo: (req, res) => {
-//         const transaction = datastore.transaction();
-//         console.log(transaction)
-//         const taskKey = datastore.key(['Bucket', req.body.id]);
-        
-//         // invalid Transaction - FIX!
-//         transaction
-//             .run()
-//             .then(() => transaction.get(taskKey)
-//                 .then(results => {
-//                     console.log(results)
-//                 const task = results[0];
-//                 task.title = 'some title';
-//                 transaction.save({
-//                     key: taskKey,
-//                     data: task,
-//                 });
-//                 return transaction.commit();
-//             }))
-//             .then(() => {
-//             // The transaction completed successfully.
-//             console.log(`Task ${taskId} updated successfully.`);
-//             })
-//             .catch(() => transaction.rollback());
-//     },
-// };
 
 module.exports = {
     registerUser: (req, res) => {
@@ -180,43 +10,93 @@ module.exports = {
         const pw = req.body.pw;
         const userKey = datastore.key('User');
 
-        const entity = {
-            key: userKey,
-            data: [
-                {
-                    name: 'created',
-                    value: new Date().toJSON()
-                },
-                {
-                    name: 'username',
-                    value: userName
-                },
-                {
-                    name: 'password',
-                    value: pw
-                },
-                {
-                    name: 'buckets',
-                    value: []
-                }
-            ]
-        }
-
-        datastore.save(entity).then(() => {
-            console.log(`User saved with ID ${userKey.id} created`);
-            res.send('Successfull creation of User');
-        }).catch(err => {
-            console.log('Error: ', err);
-            res.send('Failed')
+        bcrypt.hash(pw, saltRounds).then(function(hash) {
+            const entity = {
+                key: userKey,
+                data: [
+                    {
+                        name: 'created',
+                        value: new Date().toJSON()
+                    },
+                    {
+                        name: 'username',
+                        value: userName
+                    },
+                    {
+                        name: 'password',
+                        value: hash
+                    },
+                    {
+                        name: 'buckets',
+                        value: []
+                    }
+                ]
+            }
+            datastore.save(entity).then(() => {
+                console.log(`User saved with ID ${userKey.id} created`);
+                res.send('Successfull creation of User');
+            }).catch(err => {
+                console.log('Error: ', err);
+                res.send('Failed')
+            });
         });
+    },
+    loginUser: (req, res) => {
+        const { userName, pw } = req.body;
+        const query = datastore.createQuery('User').filter('username', '=', userName);
+
+        datastore.runQuery(query)
+            .then(results => {
+                const user = results[0][0];
+                if(user){
+                    const userId = user[datastore.KEY].id;
+                    const hashedPw = user.password;
+                    bcrypt.compare(pw, hashedPw).then(response => {
+                        if(response){
+                            req.session.user = {
+                                userName,
+                                userId
+                            }
+                            res.status(200).send(req.session.user)
+                        } else {
+                            res.status(403).send('Authentication failed.')
+                        }
+                    }).catch(err => console.log('Error in comparing PW', err));
+                } else {
+                    res.send('User does not exist.')
+                }
+            })
+            
+
+        
+    },
+    session: (req, res) => {
+        res.json({
+            currentSession: req.session
+        })
+    },
+    logout: (req, res) => {
+        req.session.destroy();
+        res.status(200).send('Logged out.')
+    },
+    deleteUser: (req, res) => {
+        const userId = req.session.user.userId;
+        const userKey = datastore.key(['User', parseInt(userId, 10)]);
+
+        datastore.delete(userKey)
+            .then(() => {
+                res.status(200).send('Successfull Deletion');
+            }).catch(err => console.log('Something went wrong in deletion the user.'))
     },
     addBucket: (req, res) => {
         const transaction = datastore.transaction();
+        console.log('User session', req.session.user)
         const userKey = datastore.key(['User', parseInt(req.body.id, 10)]);
+        const { title } = req.body;
 
         // create Bucket with no Tasks
         const bucket = {
-            title: req.body.title,
+            title,
             todos: []
         }
 
@@ -226,13 +106,18 @@ module.exports = {
             .then(() => transaction.get(userKey))
             .then(results => {
                 const user = results[0];
-                user.buckets.push(bucket)
-                console.log('This is the User Buckets: ', user.buckets);
-                transaction.save({
-                    key: userKey,
-                    data: user
-                });
-                return transaction.commit();
+                if(user.buckets.findIndex(el => el.title === title) >= 0){
+                    user.buckets.push(bucket)
+                    console.log('This is the User Buckets: ', user.buckets);
+                    transaction.save({
+                        key: userKey,
+                        data: user
+                    });
+                    return transaction.commit();
+                } else {
+                    res.status(200).send('Bucket already exists')
+                    transaction.rollback();
+                }
             })
             .then(() => {
                 // Successfull Transaction
@@ -244,6 +129,7 @@ module.exports = {
     deleteBucket: (req, res) => {
         const transaction = datastore.transaction();
         const userKey = datastore.key(['User', parseInt(req.body.id, 10)]);
+        const title = req.body.title;
 
         // get the Users Buckets and remove the One with the provided ID
         transaction
@@ -251,8 +137,10 @@ module.exports = {
             .then(() => transaction.get(userKey))
             .then(results => {
                 const user = results[0];
-                user.buckets.indexOf(bucket)
-                console.log('This is the User Buckets: ', user.buckets);
+                // console.log('This is the User Buckets: ', user.buckets);
+                const index = user.buckets.findIndex(el => el.title === title);
+                user.buckets.splice(index,1);
+                // console.log('This are the users Buckets after deletion', user.buckets)
                 transaction.save({
                     key: userKey,
                     data: user
@@ -261,9 +149,107 @@ module.exports = {
             })
             .then(() => {
                 // Successfull Transaction
-                console.log('Bucket added to User!')
-                res.status(200).send('Successfull Creation of Bucket');
+                console.log('Bucket deleted!')
+                res.status(200).send('Successfull Deletion of Bucket');
             })
             .catch(() => transaction.rollback());
+    },
+    getUser: (req, res) => {
+        const userKey = datastore.key(['User', parseInt(req.params.id, 10)]);
+        const query = datastore.createQuery('User').filter('__key__', '=', userKey);
+        
+        datastore.runQuery(query).then(results => {
+            const user = results[0];
+            console.log(user);
+            // format Result
+            const userObj = {
+                id: user[0][datastore.KEY].id,
+                name: user[0].username,
+                buckets: user[0].buckets
+            }
+            res.status(200).json(userObj);
+        }).catch(err => console.log('Error in getting User: ', err));
+    },
+    addTodo: (req, res) => {
+        console.log('Add Todo endpoint')
+        const transaction = datastore.transaction();
+        const userKey = datastore.key(['User', parseInt(req.body.id, 10)]);
+        const { todo } = req.body;
+        const { bucket } = todo;
+
+        transaction
+            .run()
+            .then(() => transaction.get(userKey))
+            .then(results => {
+                const user = results[0];
+                console.log('Add Todo endpoint 2', user);
+                const bucketIndex = user.buckets.findIndex(el => el.title === bucket);
+                user.buckets[bucketIndex].todos.push(todo);
+                console.log('New User', user)
+                transaction.save({
+                    key: userKey,
+                    data: user
+                });
+                return transaction.commit();
+            })
+            .then(() => {
+                // Successfull Transaction
+                console.log('Todo added to Bucket!')
+                res.status(200).send('Successfull Creation of Todo');
+            })
+            .catch(() => transaction.rollback());
+    },
+    checkTodo: (req, res) => {
+        const transaction = datastore.transaction();
+        // required in Body - userID, todo description, bucketname
+        const { bucket, id, descr } = req.body;
+        const userKey = datastore.key(['User', parseInt(id, 10)]);
+
+        transaction
+            .run()
+            .then(() => transaction.get(userKey))
+            .then(results => {
+                const user = results[0];
+                const bucketIndex = user.buckets.findIndex(el => el.title === bucket);
+                const todoIndex = user.buckets[bucketIndex].todos.findIndex(el => el.descr === descr);
+                // change current state - done
+                user.buckets[bucketIndex].todos[todoIndex].done = !user.buckets[bucketIndex].todos[todoIndex].done;
+                transaction.save({
+                    key: userKey,
+                    data: user
+                });
+                return transaction.commit();
+            })
+            .then(() => {
+                // Successfull editing
+                console.log('Change done state successfull!');
+                res.status(200).send('Changed State successfull!')
+            }).catch(() => transaction.rollback())
+    },
+    deleteTodo: (req, res) => {
+        const transaction = datastore.transaction();
+        // required in Body - userID, todo description, bucketname
+        const { bucket, id, descr } = req.body;
+        const userKey = datastore.key(['User', parseInt(id, 10)]);
+
+        transaction
+            .run()
+            .then(() => transaction.get(userKey))
+            .then(results => {
+                const user = results[0];
+                const bucketIndex = user.buckets.findIndex(el => el.title === bucket);
+                const todoIndex = user.buckets[bucketIndex].todos.findIndex(el => el.descr === descr);
+                // remove todo from Bucket
+                user.buckets[bucketIndex].todos.splice(todoIndex,1);
+                transaction.save({
+                    key: userKey,
+                    data: user
+                });
+                return transaction.commit();
+            })
+            .then(() => {
+                console.log('Successfull Deletion');
+                res.status(200).send('Deleted!')
+            }).catch(() => transaction.rollback());
     }
 }
