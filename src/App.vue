@@ -2,7 +2,9 @@
   <div id="app">
     <v-app>
       <Nav />
-      <router-view/>
+      <div id="content">
+        <router-view/>
+      </div>
     </v-app>
   </div>
 </template>
@@ -14,7 +16,7 @@ export default {
   name: 'App',
   components: {
     Nav
-  },
+  }
 }
 </script>
 
@@ -25,5 +27,12 @@ export default {
   h1,h2,h3,h4,h5,h6,ul {
     margin: 0;
     padding: 0
+  }
+  #content {
+    margin: 5em;
+  }
+  a {
+    text-decoration: none;
+    color: inherit;
   }
 </style>

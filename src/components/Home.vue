@@ -4,12 +4,13 @@
         <router-link to="dashboard">
             <a>Dashboard</a>
         </router-link>
+        {{ this.$store.getters.username }}
     </div>
 </template>
 
 <script>
 export default {
-  name: 'Home'
+  name: 'Home',
 }
 </script>
 
