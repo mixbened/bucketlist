@@ -32,7 +32,7 @@ export default {
       .get("/check")
       .then(res => {
         console.log("session", res.data);
-        this.$store.commit("setUserName", res.data.user);
+        this.$store.commit("setUserName", res.data);
       })
       .catch(err => console.log("Error in Request", err));
   }

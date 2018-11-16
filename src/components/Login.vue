@@ -84,7 +84,8 @@ export default {
           }
           // Case: User found and Password correct
         } else if (typeof result === "object") {
-          this.$store.commit("setUserName", result.bucketlist_user);
+          console.log("Corrreeeect!");
+          this.$store.commit("setUserName", result);
 
           this.$router.push("/dashboard");
         }

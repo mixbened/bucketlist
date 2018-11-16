@@ -68,9 +68,7 @@ module.exports = {
 								userId,
 								userName
 							};
-							res
-								.status(200)
-								.send(`User logged in: ${req.session.user} with ID: ${req.sessionID}`);
+							res.status(200).send(req.session.user);
 						} else {
 							res.status(403).send("Authentication failed.");
 						}
