@@ -11,36 +11,44 @@
 </template>
 
 <script>
-import datastoreAPI from '../services/datastoreAPI.js';
+import datastoreAPI from "../services/datastoreAPI.js";
+import axios from "axios";
+
 export default {
-    name: 'Nav',
-    data(){
-        return {
-            
-        }
-    },
-    methods: {
-        logout: function(){
-            datastoreAPI.logout()
-                .then(response => {
-                    console.log('Log out, ', response)
-                    this.$store.commit('setUserName', {})
-                })
-        }
+  name: "Nav",
+  data() {
+    return {};
+  },
+  methods: {
+    logout: function() {
+      datastoreAPI.logout().then(response => {
+        console.log("Log out, ", response);
+        this.$store.commit("setUserName", {});
+      });
     }
-}
+  },
+  created() {
+    axios
+      .get("/check")
+      .then(res => {
+        console.log("session", res.data);
+        this.$store.commit("setUserName", res.data.user);
+      })
+      .catch(err => console.log("Error in Request", err));
+  }
+};
 </script>
 
 <style scoped>
-    nav {
-        display: flex;
-        justify-content: space-between;
-        padding: 1em;
-        align-items: center;
-    }
-    a {
-        padding: 0 0.5em;
-        font-size: 1.1em;
-    }
+nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 1em;
+  align-items: center;
+}
+a {
+  padding: 0 0.5em;
+  font-size: 1.1em;
+}
 </style>
 

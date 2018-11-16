@@ -1,14 +1,5 @@
 <template>
     <div>
-        <h2>Login to check your Buckets</h2>
-        <v-alert
-            :value="checker"
-            color="warning"
-            icon="priority_high"
-            transition="scale-transition"
-            outline
-        >{{ checkerMessage }}
-        </v-alert>
         <v-form v-model="valid">
             <v-text-field
                 v-model="userName"
@@ -22,6 +13,14 @@
                 label="Password"
                 required
             ></v-text-field>
+            <v-alert
+                :value="checker"
+                color="warning"
+                icon="priority_high"
+                transition="scale-transition"
+                outline
+            >{{ checkerMessage }}
+            </v-alert>
             <v-btn
             :disabled="!valid"
             @click="login"
@@ -31,55 +30,76 @@
             <router-link to="register">
                 <a>Not Registered?</a>
             </router-link>
+            <v-btn @click='session'>Session</v-btn>
         </v-form>
     </div>
 </template>
 
 <script>
-import datastoreAPI from '../services/datastoreAPI.js';
+import datastoreAPI from "../services/datastoreAPI.js";
+import axios from "axios";
+
 export default {
-    name: 'Login',
-    data: () => ({
-      valid: false,
-      userName: '',
-      userNameRules: [
-        v => !!v || 'username is required',
-        v => v.length <= 15 || 'Username must be less than 15 characters'
-      ],
-      pw: '',
-      pwRules: [
-        v => !!v || 'Password is required',
-        v => v.length >= 5 || 'Password must be longer than 4 Characters'
-      ],
-      checker: false
-    }),
-    methods: {
-        login: function(){
-            // use the trim method to remove whitespace from inputs
-            const user = {
-                userName: this.userName.trim(),
-                pw: this.pw.trim()
-            }
-            // console.log('run login with', user)
-           datastoreAPI.login(user)
-            .then(result => {
-                console.log('Login Result', typeof result)
-                if(typeof result === 'string'){
-                    this.checker = true
-                    this.checkerMessage = 'The Password you entered does not match with the Username'
-                    this.$router.push('/login')
-                } else if(typeof result === 'object'){
-                    this.$store.commit('setUserName', result)
-                    this.$router.push('/dashboard')
-                }
-            })
+  name: "Login",
+  data: () => ({
+    valid: false,
+    userName: "",
+    userNameRules: [
+      v => !!v || "username is required",
+      v => v.length <= 15 || "Username must be less than 15 characters"
+    ],
+    pw: "",
+    pwRules: [
+      v => !!v || "Password is required",
+      v => v.length >= 5 || "Password must be longer than 4 Characters"
+    ],
+    checker: false,
+    checkerMessage: ""
+  }),
+  methods: {
+    login: function() {
+      // use the trim method to remove whitespace from inputs
+      const user = {
+        userName: this.userName.trim(),
+        pw: this.pw.trim()
+      };
+      // console.log('run login with', user)
+      datastoreAPI.login(user).then(result => {
+        console.log("Login Result", result);
+
+        if (typeof result === "string") {
+          // Case: Did not find a matching username
+          if (result === "User does not exist.") {
+            this.checker = true;
+
+            this.checkerMessage =
+              "We could not find a User matching that Username.";
+
+            // Case: User found, but Password incorrect
+          } else {
+            this.checker = true;
+
+            this.checkerMessage =
+              "The Password you entered does not match with the Username.";
+          }
+          // Case: User found and Password correct
+        } else if (typeof result === "object") {
+          this.$store.commit("setUserName", result.bucketlist_user);
+
+          this.$router.push("/dashboard");
         }
+      });
+    },
+    session: function() {
+      axios.get("/check", { withCredentials: true }).then(res => {
+        console.log("Session Response: ", res);
+      });
     }
-}
+  }
+};
 </script>
 
 <style scoped>
-    
 </style>
 
 

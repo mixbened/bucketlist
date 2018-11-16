@@ -13,31 +13,32 @@
 </template>
 
 <script>
-import List from './List'
-import BucketList from './BucketList'
+import List from "./List";
+import BucketList from "./BucketList";
+import axios from "axios";
 
 export default {
-  name: 'Dashboard',
+  name: "Dashboard",
   components: { List, BucketList },
-  data (){
+  data() {
     return {
       currentBucket: null
-    }
+    };
   }
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .container {
-    display: flex;
-  }
-  .listBox {
-    flex: 2;
-    border: 1px solid black
-  }
-  .bucketList {
-    flex: 1;
-    border: 1px solid red;
-  }
+.container {
+  display: flex;
+}
+.listBox {
+  flex: 2;
+  border: 1px solid black;
+}
+.bucketList {
+  flex: 1;
+  border: 1px solid red;
+}
 </style>
