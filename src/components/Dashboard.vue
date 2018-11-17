@@ -1,12 +1,12 @@
 <template>
   <div id="globe">
-    <h2>Heading</h2>
+    <h2>{{ currentBucket || 'Choose a Bucket' }}</h2>
     <div class="container">
       <div class="listBox">
-        <List :currentBucket='currentBucket' />
+        <List :list='list' :currentBucket='currentBucket' />
       </div>
       <div class="bucketList">
-        <BucketList @chooseBucket="currentBucket = $event"/>
+        <BucketList :list='list' @setBucket="currentBucket = $event"/>
       </div>
     </div>
   </div>
@@ -16,14 +16,25 @@
 import List from "./List";
 import BucketList from "./BucketList";
 import axios from "axios";
+import datastoreAPI from "../services/datastoreAPI.js";
 
 export default {
   name: "Dashboard",
   components: { List, BucketList },
   data() {
     return {
-      currentBucket: null
+      currentBucket: null,
+      list: []
     };
+  },
+  created() {
+    datastoreAPI
+      .getUser()
+      .then(response => {
+        this.list = response.buckets;
+        // user response
+      })
+      .catch(err => console.log(`Error in getting User info: ${err}`));
   }
 };
 </script>

@@ -14,7 +14,7 @@ const app = express();
 app.use(
 	cors({
 		origin: ["http://localhost:8080"],
-		methods: ["GET", "POST"],
+		methods: ["GET", "POST", "DELETE"],
 		credentials: true // enable set cookie
 	})
 );
@@ -32,8 +32,8 @@ app.use(
 // ENDPOINTS
 // Bucket Crud
 app.post("/bucket", datastore.addBucket);
-app.get("/user/:id", datastore.getUser);
-app.delete("/bucket", datastore.deleteBucket);
+app.get("/user", datastore.getUser);
+app.delete("/bucket/:title", datastore.deleteBucket);
 // app.put('/bucket', datastore.changeBucket);
 // Todo Crud
 app.post("/todo", datastore.addTodo);

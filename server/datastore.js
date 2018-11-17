@@ -101,8 +101,11 @@ module.exports = {
 	addBucket: (req, res) => {
 		const transaction = datastore.transaction();
 		console.log("User session", req.session.user);
-		const userKey = datastore.key(["User", parseInt(req.body.id, 10)]);
 		const { title } = req.body;
+		const userKey = datastore.key([
+			"User",
+			parseInt(req.session.user.userId, 10)
+		]);
 
 		// create Bucket with no Tasks
 		const bucket = {
@@ -116,7 +119,7 @@ module.exports = {
 			.then(() => transaction.get(userKey))
 			.then(results => {
 				const user = results[0];
-				if (user.buckets.findIndex(el => el.title === title) >= 0) {
+				if (user.buckets.findIndex(el => el.title === title) <= 0) {
 					user.buckets.push(bucket);
 					console.log("This is the User Buckets: ", user.buckets);
 					transaction.save({
@@ -138,8 +141,11 @@ module.exports = {
 	},
 	deleteBucket: (req, res) => {
 		const transaction = datastore.transaction();
-		const userKey = datastore.key(["User", parseInt(req.body.id, 10)]);
-		const title = req.body.title;
+		const userKey = datastore.key([
+			"User",
+			parseInt(req.session.user.userId, 10)
+		]);
+		const title = req.params.title;
 
 		// get the Users Buckets and remove the One with the provided ID
 		transaction
@@ -165,7 +171,10 @@ module.exports = {
 			.catch(() => transaction.rollback());
 	},
 	getUser: (req, res) => {
-		const userKey = datastore.key(["User", parseInt(req.params.id, 10)]);
+		const userKey = datastore.key([
+			"User",
+			parseInt(req.session.user.userId, 10)
+		]);
 		const query = datastore.createQuery("User").filter("__key__", "=", userKey);
 
 		datastore
@@ -186,7 +195,10 @@ module.exports = {
 	addTodo: (req, res) => {
 		console.log("Add Todo endpoint");
 		const transaction = datastore.transaction();
-		const userKey = datastore.key(["User", parseInt(req.body.id, 10)]);
+		const userKey = datastore.key([
+			"User",
+			parseInt(req.session.user.userId, 10)
+		]);
 		const { todo } = req.body;
 		const { bucket } = todo;
 
