@@ -14,7 +14,7 @@ const app = express();
 app.use(
 	cors({
 		origin: ["http://localhost:8080"],
-		methods: ["GET", "POST", "DELETE"],
+		methods: ["GET", "POST", "DELETE", "PUT"],
 		credentials: true // enable set cookie
 	})
 );
@@ -25,7 +25,9 @@ app.use(
 		resave: true,
 		saveUninitialized: true,
 		secret: process.env.SESSION_SECRET,
-		cookie: { secure: false }
+		cookie: {
+			secure: false
+		}
 	})
 );
 
@@ -38,14 +40,14 @@ app.delete("/bucket/:title", datastore.deleteBucket);
 // Todo Crud
 app.post("/todo", datastore.addTodo);
 // app.get('/todos', datastore.getTodos);
-app.delete("/todo", datastore.deleteTodo);
+app.post("/deleteTodo", datastore.deleteTodo);
 app.put("/todo", datastore.checkTodo);
 // User Crud
 app.post("/user", datastore.registerUser);
 app.post("/login", datastore.loginUser);
 app.get("/logout", datastore.logout);
 app.delete("/user", datastore.deleteUser);
-app.get("/check", function(req, res) {
+app.get("/check", function (req, res) {
 	res.send(req.session.user);
 });
 

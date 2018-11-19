@@ -4,7 +4,7 @@
         <input type="text" v-model="todoInput">
         <button @click='addTodo'>Add Task</button>
         <ul>
-            <ListItem v-for='item in filteredList' v-bind:key='item.descr' :descr='item.descr' :done='item.done' />
+            <ListItem @checkTodo="checkTodo($event)" @deleteTodo="deleteTodo($event)" v-for='item in filteredList' v-bind:key='item.descr' :descr='item.descr' :done='item.done' />
         </ul>
     </div>
 </template>
@@ -23,7 +23,8 @@ export default {
   },
   watch: {
     currentBucket: function() {
-      this.filteredList = this.filterList(this.currentBucket);
+      console.log("Bucket changed");
+      this.filterList(this.currentBucket);
     }
   },
   methods: {
@@ -37,8 +38,11 @@ export default {
         }
       };
       // push todo to shown List
-      this.filteredList.push(star);
-      this.list.push(star);
+      const bucketIndex = this.list.findIndex(
+        el => el.title === this.currentBucket
+      );
+      console.log("List: ", this.list, "and", bucketIndex);
+      this.list[bucketIndex].todos.push(star.todo);
       // add Todo to the Database
       datastoreAPI
         .addTodo(star)
@@ -53,24 +57,68 @@ export default {
     // filter the List for the right Bucket
     filterList: function(bucket) {
       const newList = this.list.filter(el => el.title === bucket);
-      this.filteredList = newList.todos;
+      console.log("New List: ", newList);
+      this.filteredList = newList[0].todos;
     },
     checkTodo: function(descr) {
+      // console.log("Check Todo", descr, this.currentBucket);
       // frontend check
+      console.log("Handler: ", this.list, this.currentBucket);
       const bucketIndex = this.list.findIndex(
-        el => el.bucket === currentBucket
+        el => el.title === this.currentBucket
       );
       const todoIndex = this.list[bucketIndex].todos.findIndex(
         el => el.descr === descr
       );
-      let check = this.list[bucketIndex].todos[todoIndex].done;
-      check = !check;
-      this.filteredList = this.filterList(this.list);
+      console.log("before check: ", this.list);
+      this.list[bucketIndex].todos[todoIndex].done = !this.list[bucketIndex]
+        .todos[todoIndex].done;
+      console.log("after check: ", this.list);
+      this.filterList(this.currentBucket);
+      const todo = {
+        bucket: this.currentBucket,
+        descr
+      };
       // database check
       datastoreAPI
-        .checkTodo(id)
-        .then(response => {})
+        .checkTodo(todo)
+        .then(response => {
+          if (response === "Changed State successfull!") {
+            console.log("Checked Todo.");
+          } else {
+            console.log("Error in checking Todo.");
+          }
+        })
         .catch(err => console.log(`Error in checking Todo: ${err}`));
+    },
+    deleteTodo: function(descr) {
+      console.log("Delete Function!", this.currentBucket);
+      // frontend deletion
+      const bucketIndex = this.list.findIndex(
+        el => el.title === this.currentBucket
+      );
+      console.log("Bucket Index", bucketIndex);
+      const todoIndex = this.list[bucketIndex].todos.findIndex(
+        el => el.descr === descr
+      );
+      console.log("Todo Index", todoIndex);
+      this.list[bucketIndex].todos.splice(todoIndex, 1);
+
+      const todo = {
+        descr,
+        bucket: this.currentBucket
+      };
+      // database deletion
+      datastoreAPI
+        .deleteTodo(todo)
+        .then(response => {
+          if (response === "Deleted!") {
+            console.log("Deleted Successfully!");
+          } else {
+            console.log("Error in deleting Todo");
+          }
+        })
+        .catch(err => console.log(`Error in deleting Todo ${err}`));
     }
   },
   components: { ListItem },

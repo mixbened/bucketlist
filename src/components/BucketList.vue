@@ -24,9 +24,10 @@ export default {
   methods: {
     addBucket: function(title) {
       const bucket = {
-        title: this.titleInput
+        title: this.titleInput,
+        todos: []
       };
-      this.bucketList.push(bucket);
+      this.list.push(bucket);
       datastoreAPI
         .addBucket(bucket)
         .then(result => {
@@ -44,8 +45,8 @@ export default {
     },
     deleteBucket: function(title) {
       // delete in Frontend
-      const index = this.bucketList.findIndex(el => el.title === title);
-      this.bucketList.splice(index, 1);
+      const index = this.list.findIndex(el => el.title === title);
+      this.list.splice(index, 1);
       // delete in Database
       datastoreAPI
         .deleteBucket(title)

@@ -3,7 +3,11 @@ import axios from "axios";
 export default {
 	login(payload) {
 		return axios
-			.post("/login", payload, { headers: { withCredentials: true } })
+			.post("/login", payload, {
+				headers: {
+					withCredentials: true
+				}
+			})
 			.then(response => {
 				return response.data;
 			})
@@ -64,5 +68,16 @@ export default {
 				return response.data;
 			})
 			.catch(err => console.log(`Error in adding Todo: ${err}`));
+	},
+	deleteTodo(todo) {
+		console.log('Service', todo)
+		return axios.post('/deleteTodo', todo).then(response => {
+			return response.data
+		}).catch(err => console.log(`Error in deleting Todo: ${err}`))
+	},
+	checkTodo(todo) {
+		return axios.put('/todo', todo).then(response => {
+			return response.data
+		}).catch(err => console.log('Error in checking Todo: ', err))
 	}
 };

@@ -22,16 +22,30 @@ module.exports = {
 				res.status(200).send("User already exists!");
 			} else {
 				// start registration
-				bcrypt.hash(pw, saltRounds).then(function(hash) {
+				bcrypt.hash(pw, saltRounds).then(function (hash) {
 					// create user entity
 					const entity = {
 						key: userKey,
-						data: [
-							{ name: "created", value: new Date().toJSON() },
-							{ name: "username", value: userName },
-							{ name: "password", value: hash },
-							{ name: "buckets", value: [] },
-							{ name: "email", value: mail }
+						data: [{
+								name: "created",
+								value: new Date().toJSON()
+							},
+							{
+								name: "username",
+								value: userName
+							},
+							{
+								name: "password",
+								value: hash
+							},
+							{
+								name: "buckets",
+								value: []
+							},
+							{
+								name: "email",
+								value: mail
+							}
 						]
 					};
 					// save user in the database
@@ -52,7 +66,10 @@ module.exports = {
 	loginUser: (req, res) => {
 		console.log(req.body);
 		console.log("Login Session: ", req.cookies);
-		const { userName, pw } = req.body;
+		const {
+			userName,
+			pw
+		} = req.body;
 		const query = datastore.createQuery("User").filter("username", "=", userName);
 
 		datastore.runQuery(query).then(results => {
@@ -101,7 +118,9 @@ module.exports = {
 	addBucket: (req, res) => {
 		const transaction = datastore.transaction();
 		console.log("User session", req.session.user);
-		const { title } = req.body;
+		const {
+			title
+		} = req.body;
 		const userKey = datastore.key([
 			"User",
 			parseInt(req.session.user.userId, 10)
@@ -192,6 +211,7 @@ module.exports = {
 			})
 			.catch(err => console.log("Error in getting User: ", err));
 	},
+	// TODO: unique Todo Descriptipn per Bucket
 	addTodo: (req, res) => {
 		console.log("Add Todo endpoint");
 		const transaction = datastore.transaction();
@@ -199,8 +219,12 @@ module.exports = {
 			"User",
 			parseInt(req.session.user.userId, 10)
 		]);
-		const { todo } = req.body;
-		const { bucket } = todo;
+		const {
+			todo
+		} = req.body;
+		const {
+			bucket
+		} = todo;
 
 		transaction
 			.run()
@@ -226,9 +250,12 @@ module.exports = {
 	},
 	checkTodo: (req, res) => {
 		const transaction = datastore.transaction();
-		// required in Body - userID, todo description, bucketname
-		const { bucket, id, descr } = req.body;
-		const userKey = datastore.key(["User", parseInt(id, 10)]);
+		// required in Body -  todo description, bucketname
+		const {
+			bucket,
+			descr
+		} = req.body;
+		const userKey = datastore.key(["User", parseInt(req.session.user.userId, 10)]);
 
 		transaction
 			.run()
@@ -250,22 +277,27 @@ module.exports = {
 			})
 			.then(() => {
 				// Successfull editing
-				console.log("Change done state successfull!");
+				console.log("Changed done state successfull!");
 				res.status(200).send("Changed State successfull!");
 			})
 			.catch(() => transaction.rollback());
 	},
 	deleteTodo: (req, res) => {
 		const transaction = datastore.transaction();
-		// required in Body - userID, todo description, bucketname
-		const { bucket, id, descr } = req.body;
-		const userKey = datastore.key(["User", parseInt(id, 10)]);
+		// required in Body - todo description, bucketname
+		const {
+			bucket,
+			descr
+		} = req.body;
+		console.log('information', req.body, req.session.user)
+		const userKey = datastore.key(["User", parseInt(req.session.user.userId, 10)]);
 
 		transaction
 			.run()
 			.then(() => transaction.get(userKey))
 			.then(results => {
 				const user = results[0];
+				console.log('User result: ', user)
 				const bucketIndex = user.buckets.findIndex(el => el.title === bucket);
 				const todoIndex = user.buckets[bucketIndex].todos.findIndex(
 					el => el.descr === descr
