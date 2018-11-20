@@ -1,10 +1,18 @@
 <template>
     <div>
-        <input v-model='titleInput' type="text">
-        <button @click='addBucket'>Add Bucket</button>
+      <v-btn  id="edit" icon>
+        <v-icon @click="edit = !edit">edit</v-icon>
+      </v-btn>
+        <h2>Your Buckets</h2>
         <ul>
-            <BucketItem @deleteBucket="deleteBucket($event)" @chooseBucket="$emit('setBucket', $event)" v-for='item in list' :key='item.key' :title='item.title'/>
+            <BucketItem :edit="edit" @deleteBucket="deleteBucket($event)" @chooseBucket="$emit('setBucket', $event)" v-for='item in list' :key='item.key' :title='item.title'/>
         </ul>
+        <v-text-field
+        v-if="edit"
+        @keyup.enter="addBucket"
+        v-model="titleInput"
+        label="New Bucket"
+        ></v-text-field>
     </div>
 </template>
 
@@ -17,7 +25,8 @@ export default {
   props: ["list"],
   data() {
     return {
-      titleInput: ""
+      titleInput: "",
+      edit: false
     };
   },
   components: { BucketItem },
@@ -60,6 +69,22 @@ export default {
 </script>
 
 <style scoped>
+ul {
+  list-style-type: none;
+}
+h2 {
+  text-align: center;
+}
+div {
+  padding: 0.5em;
+  position: relative;
+}
+#edit {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  margin: 0;
+}
 </style>
 
 

@@ -1,6 +1,5 @@
 <template>
   <div id="globe">
-    <h2>{{ currentBucket || 'Choose a Bucket' }}</h2>
     <div class="container">
       <div class="listBox">
         <List :list='list' :currentBucket='currentBucket' />

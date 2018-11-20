@@ -1,11 +1,11 @@
 <template>
     <div>
-        <h2>Choose a Bucket</h2>
-        <input type="text" v-model="todoInput">
-        <button @click='addTodo'>Add Task</button>
+        <h2>{{ currentBucket || 'Choose a Bucket' }}</h2>
         <ul>
             <ListItem @checkTodo="checkTodo($event)" @deleteTodo="deleteTodo($event)" v-for='item in filteredList' v-bind:key='item.descr' :descr='item.descr' :done='item.done' />
         </ul>
+        <input type="text" v-model="todoInput">
+        <button @click='addTodo'>Add Task</button>
     </div>
 </template>
 
@@ -127,4 +127,7 @@ export default {
 </script>
 
 <style scoped>
+ul {
+  list-style-type: none;
+}
 </style>

@@ -75,7 +75,7 @@ export default {
       datastoreAPI.register(user).then(response => {
         if (response === "Successfull creation of User") {
           this.$store.commit("setUserName", user);
-          this.$router.push("/dashboard");
+          this.$router.push("/login");
         } else if (response === "User already exists!") {
           this.checker = true;
           this.checkerMessage =
